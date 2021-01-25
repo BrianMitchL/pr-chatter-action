@@ -1,0 +1,9 @@
+name: 'PR Chatter'
+author: 'Brian Mitchell <bman4789@gmail.com>'
+description: 'Add fun chatter to your Pull Requests.'
+branding:
+  icon: 'gift'
+  color: 'purple'
+runs:
+  using: 'node12'
+  main: 'index.js'

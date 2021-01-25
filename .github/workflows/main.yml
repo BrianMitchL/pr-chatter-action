@@ -1,0 +1,11 @@
+on: [pull_request_review]
+
+jobs:
+  main:
+    runs-on: ubuntu-latest
+    name: Main
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: PR Chatter step
+        uses: ./ # Uses an action in the root directory

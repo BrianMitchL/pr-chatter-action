@@ -1,0 +1,31 @@
+{
+  "name": "pr-chatter-action",
+  "version": "1.0.0",
+  "description": "Add fun chatter to your Pull Requests",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/BrianMitchL/pr-chatter-action.git"
+  },
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/BrianMitchL/pr-chatter-action/issues"
+  },
+  "homepage": "https://github.com/BrianMitchL/pr-chatter-action#readme",
+  "dependencies": {
+    "@actions/core": "^1.2.6",
+    "@actions/github": "^4.0.0"
+  },
+  "prettier": {
+    "singleQuote": true
+  },
+  "devDependencies": {
+    "husky": "^4.3.8",
+    "prettier": "^2.2.1",
+    "pretty-quick": "^3.1.0"
+  }
+}
