@@ -1,4 +1,8 @@
-on: [pull_request_review]
+name: Self-Test
+
+on:
+  pull_request_review:
+    types: [submitted, edited, dismissed]
 
 jobs:
   main:
