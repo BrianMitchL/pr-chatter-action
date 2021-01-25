@@ -1,14 +1,14 @@
 const core = require('@actions/core');
 const github = require('@actions/github');
 
-async function action() {
+async function run() {
   try {
     const githubToken = core.getInput('GITHUB_TOKEN');
 
     const context = github.context;
 
     if (context.payload.pull_request == null) {
-      core.setFailed('No pull request review found.');
+      core.setFailed('No pull request found.');
       return;
     }
 
@@ -25,4 +25,4 @@ async function action() {
   }
 }
 
-action();
+run();
