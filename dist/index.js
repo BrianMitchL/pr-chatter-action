@@ -20,13 +20,17 @@ async function run() {
     }
 
     core.debug(JSON.stringify(context.payload.pull_request, null, 2));
+    core.debug(JSON.stringify(context.payload.pull_request.review, null, 2));
 
     const octokit = github.getOctokit(githubToken);
-    await octokit.issues.createComment({
-      ...context.repo,
-      issue_number: context.payload.pull_request.number,
-      body: "This is the coolest Pull Request I've ever seen!",
-    });
+
+    if (context.payload.pull_request.review.state === 'approved') {
+      await octokit.issues.createComment({
+        ...context.repo,
+        issue_number: context.payload.pull_request.number,
+        body: 'Good job, you wrote some good code.',
+      });
+    }
   } catch (error) {
     core.setFailed(error.message);
   }
