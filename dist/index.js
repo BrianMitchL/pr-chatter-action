@@ -19,12 +19,14 @@ async function run() {
       return;
     }
 
+    core.debug(context.payload.action);
+
     core.debug(JSON.stringify(context.payload.pull_request, null, 2));
-    core.debug(JSON.stringify(context.payload.pull_request.review, null, 2));
+    core.debug(JSON.stringify(context.payload.review, null, 2));
 
     const octokit = github.getOctokit(githubToken);
 
-    if (context.payload.pull_request.review.state === 'approved') {
+    if (context.payload.review && context.payload.review.state === 'approved') {
       await octokit.issues.createComment({
         ...context.repo,
         issue_number: context.payload.pull_request.number,
