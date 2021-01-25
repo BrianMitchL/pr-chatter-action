@@ -19,3 +19,5 @@ jobs:
         uses: bahmutov/npm-install@v1
       - name: PR Chatter step
         uses: ./ # Uses an action in the root directory
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

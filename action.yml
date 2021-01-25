@@ -7,3 +7,7 @@ branding:
 runs:
   using: 'node12'
   main: 'index.js'
+inputs:
+  GITHUB_TOKEN:
+    description: 'Github Token for authentication'
+    required: true
