@@ -10,6 +10,10 @@ const github = __nccwpck_require__(438);
 const fetch = __nccwpck_require__(467);
 
 async function fetchGif(tenorApiKey, keyword) {
+  if (!tenorApiKey) {
+    return null;
+  }
+
   const params = new URLSearchParams();
   params.append('key', tenorApiKey);
   params.append('q', keyword);
@@ -33,15 +37,13 @@ async function fetchGif(tenorApiKey, keyword) {
   }
 }
 
+function parseKeywordConfig(configString) {
+  const words = configString.split(',').map((keyword) => keyword.trim());
+  return words[Math.floor(Math.random() * words.length)];
+}
+
 async function run() {
   try {
-    const githubToken = core.getInput('GITHUB_TOKEN');
-    const tenorApiKey = core.getInput('TENOR_API_KEY');
-    const gifSuccessKeywords = core
-      .getInput('gifSuccessKeywords')
-      .split(',')
-      .map((keyword) => keyword.trim());
-
     const context = github.context;
 
     if (context.payload.pull_request == null) {
@@ -49,25 +51,40 @@ async function run() {
       return;
     }
 
-    core.debug(context.payload.action);
+    const githubToken = core.getInput('GITHUB_TOKEN');
+    const tenorApiKey = core.getInput('TENOR_API_KEY');
+    const approvedGifKeyword = parseKeywordConfig(
+      core.getInput('approvedGifKeywords')
+    );
+    const changedRequestedGifKeyword = parseKeywordConfig(
+      core.getInput('changedRequestedGifKeywords')
+    );
 
+    core.debug(context.payload.action);
     core.debug(JSON.stringify(context.payload.pull_request, null, 2));
     core.debug(JSON.stringify(context.payload.review, null, 2));
 
     const octokit = github.getOctokit(githubToken);
 
-    if (context.payload.review && context.payload.review.state === 'approved') {
-      let gifUrl = null;
+    const state = context.payload.review.state;
 
-      if (tenorApiKey) {
-        const keyword =
-          gifSuccessKeywords[
-            Math.floor(Math.random() * gifSuccessKeywords.length)
-          ];
-        gifUrl = await fetchGif(tenorApiKey, keyword);
-      }
+    if (state === 'approved') {
+      const gifUrl = await fetchGif(tenorApiKey, approvedGifKeyword);
 
       let message = 'Good job, you wrote some good code.';
+      if (gifUrl) {
+        message += `\n![GIF](${gifUrl})`;
+      }
+
+      await octokit.issues.createComment({
+        ...context.repo,
+        issue_number: context.payload.pull_request.number,
+        body: message,
+      });
+    } else if (state === 'changes_requested') {
+      const gifUrl = await fetchGif(tenorApiKey, changedRequestedGifKeyword);
+
+      let message = "Well that's interesting.";
       if (gifUrl) {
         message += `\n![GIF](${gifUrl})`;
       }
