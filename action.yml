@@ -14,7 +14,11 @@ inputs:
   TENOR_API_KEY:
     description: 'API key for using GIFs from Tenor'
     required: false
-  gifSuccessKeywords:
-    description: 'Comma separated string of keywords to randomly use for embedding GIFs'
+  approvedGifKeywords:
+    description: 'Comma separated string of keywords to randomly use for embedding PR approved GIFs'
     required: false
     default: 'awesome, good job, thumbs up, great work, hooray, nice, looks good, approve, amazing, incredible, perfect'
+  changedRequestedGifKeywords:
+    description: 'Comma separated string of keywords to randomly use for embedding PR changed requested GIFs'
+    required: false
+    default: 'try again, review, at least you tried, so close, dumpster fire'
