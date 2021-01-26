@@ -11,3 +11,10 @@ inputs:
   GITHUB_TOKEN:
     description: 'Github Token for authentication'
     required: true
+  TENOR_API_KEY:
+    description: 'API key for using GIFs from Tenor'
+    required: false
+  gifSuccessKeywords:
+    description: 'Comma separated string of keywords to randomly use for embedding GIFs'
+    required: false
+    default: 'awesome, good job, thumbs up, great work, hooray, nice, looks good, approve, amazing, incredible, perfect'

@@ -19,7 +19,8 @@
   "homepage": "https://github.com/BrianMitchL/pr-chatter-action#readme",
   "dependencies": {
     "@actions/core": "^1.2.6",
-    "@actions/github": "^4.0.0"
+    "@actions/github": "^4.0.0",
+    "node-fetch": "^2.6.1"
   },
   "devDependencies": {
     "@vercel/ncc": "^0.27.0",
