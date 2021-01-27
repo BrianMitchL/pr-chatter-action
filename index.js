@@ -20,7 +20,8 @@ async function fetchGif(tenorApiKey, keyword) {
     );
     if (response.ok) {
       const json = await response.json();
-      return json.results[0].media[0].gif.url;
+      const url = json.results[0].media[0].gif.url;
+      return `![${keyword}](${url})`;
     } else {
       return null;
     }
@@ -37,6 +38,18 @@ function parseKeywordConfig(configString) {
 
 async function run() {
   try {
+    const githubToken = core.getInput('GITHUB_TOKEN');
+    const tenorApiKey = core.getInput('TENOR_API_KEY');
+    if (!githubToken) {
+      core.setFailed('No GitHub token set.');
+      return;
+    }
+
+    if (!tenorApiKey) {
+      core.setFailed('No Tenor API key set.');
+      return;
+    }
+
     const context = github.context;
 
     if (context.payload.pull_request == null) {
@@ -44,8 +57,6 @@ async function run() {
       return;
     }
 
-    const githubToken = core.getInput('GITHUB_TOKEN');
-    const tenorApiKey = core.getInput('TENOR_API_KEY');
     const approvedGifKeyword = parseKeywordConfig(
       core.getInput('approvedGifKeywords')
     );
@@ -62,31 +73,28 @@ async function run() {
     const state = context.payload.review.state;
 
     if (state === 'approved') {
-      const gifUrl = await fetchGif(tenorApiKey, approvedGifKeyword);
+      const gifMarkdown = await fetchGif(tenorApiKey, approvedGifKeyword);
 
-      let message = 'Good job, you wrote some good code.';
-      if (gifUrl) {
-        message += `\n![GIF](${gifUrl})`;
+      if (gifMarkdown) {
+        await octokit.issues.createComment({
+          ...context.repo,
+          issue_number: context.payload.pull_request.number,
+          body: gifMarkdown,
+        });
       }
-
-      await octokit.issues.createComment({
-        ...context.repo,
-        issue_number: context.payload.pull_request.number,
-        body: message,
-      });
     } else if (state === 'changes_requested') {
-      const gifUrl = await fetchGif(tenorApiKey, changedRequestedGifKeyword);
+      const gifMarkdown = await fetchGif(
+        tenorApiKey,
+        changedRequestedGifKeyword
+      );
 
-      let message = "Well that's interesting.";
-      if (gifUrl) {
-        message += `\n![GIF](${gifUrl})`;
+      if (gifMarkdown) {
+        await octokit.issues.createComment({
+          ...context.repo,
+          issue_number: context.payload.pull_request.number,
+          body: gifMarkdown,
+        });
       }
-
-      await octokit.issues.createComment({
-        ...context.repo,
-        issue_number: context.payload.pull_request.number,
-        body: message,
-      });
     }
   } catch (error) {
     core.setFailed(error.message);

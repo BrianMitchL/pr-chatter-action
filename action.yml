@@ -13,7 +13,7 @@ inputs:
     required: true
   TENOR_API_KEY:
     description: 'API key for using GIFs from Tenor'
-    required: false
+    required: true
   approvedGifKeywords:
     description: 'Comma separated string of keywords to randomly use for embedding PR approved GIFs'
     required: false
