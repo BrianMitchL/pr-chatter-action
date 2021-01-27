@@ -9,6 +9,21 @@ const core = __nccwpck_require__(186);
 const github = __nccwpck_require__(438);
 const fetch = __nccwpck_require__(467);
 
+function randomInArray(array) {
+  return array[Math.floor(Math.random() * array.length)];
+}
+
+function getRandomGif(results) {
+  if (results.length > 0) {
+    const result = randomInArray(results);
+    if (result.media[0]) {
+      return result.media[0].gif.url;
+    }
+    core.debug('no no media found in random tenor result');
+  }
+  core.debug('no results in tenor response');
+}
+
 async function fetchGif(tenorApiKey, keyword) {
   if (!tenorApiKey) {
     return null;
@@ -17,7 +32,8 @@ async function fetchGif(tenorApiKey, keyword) {
   const params = new URLSearchParams();
   params.append('key', tenorApiKey);
   params.append('q', keyword);
-  params.append('limit', '1');
+  params.append('limit', '25');
+  params.append('locale', 'en_US');
   params.append('contentfilter', 'medium');
   params.append('media_filter', 'minimal');
 
@@ -27,20 +43,23 @@ async function fetchGif(tenorApiKey, keyword) {
     );
     if (response.ok) {
       const json = await response.json();
-      const url = json.results[0].media[0].gif.url;
-      return `![${keyword}](${url})`;
+      const url = getRandomGif(json.results);
+      if (url) {
+        return `![${keyword}](${url})`;
+      }
+      return null;
     } else {
       return null;
     }
   } catch (e) {
-    console.error(e);
+    core.debug(e.message);
     return null;
   }
 }
 
 function parseKeywordConfig(configString) {
   const words = configString.split(',').map((keyword) => keyword.trim());
-  return words[Math.floor(Math.random() * words.length)];
+  return randomInArray(words);
 }
 
 async function run() {
