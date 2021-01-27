@@ -1,2 +1,2 @@
 # pr-chatter-action
-Add fun chatter to your Pull Requests
+Add fun chatter to your Pull Requests using GIFs!
