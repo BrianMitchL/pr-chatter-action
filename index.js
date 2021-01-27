@@ -1,10 +1,7 @@
 const core = require('@actions/core');
 const github = require('@actions/github');
 const fetch = require('node-fetch');
-
-function randomInArray(array) {
-  return array[Math.floor(Math.random() * array.length)];
-}
+const { randomInArray, findKeyword } = require('./utils');
 
 function getRandomGif(results) {
   if (results.length > 0) {
@@ -83,29 +80,18 @@ async function run() {
       core.getInput('changedRequestedGifKeywords')
     );
 
-    core.debug(context.payload.action);
-    core.debug(JSON.stringify(context.payload.pull_request, null, 2));
-    core.debug(JSON.stringify(context.payload.review, null, 2));
-
     const octokit = github.getOctokit(githubToken);
 
     const state = context.payload.review.state;
 
-    if (state === 'approved') {
-      const gifMarkdown = await fetchGif(tenorApiKey, approvedGifKeyword);
-
-      if (gifMarkdown) {
-        await octokit.issues.createComment({
-          ...context.repo,
-          issue_number: context.payload.pull_request.number,
-          body: gifMarkdown,
-        });
-      }
-    } else if (state === 'changes_requested') {
-      const gifMarkdown = await fetchGif(
-        tenorApiKey,
-        changedRequestedGifKeyword
-      );
+    if (['approved', 'changes_requested'].includes(state)) {
+      const keyword = findKeyword({
+        state,
+        body: context.payload.review.body,
+        fallbackApprove: approvedGifKeyword,
+        fallbackChangesRequested: changedRequestedGifKeyword,
+      });
+      const gifMarkdown = await fetchGif(tenorApiKey, keyword);
 
       if (gifMarkdown) {
         await octokit.issues.createComment({
