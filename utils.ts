@@ -1,16 +1,23 @@
-const Sentiment = require('sentiment');
+import Sentiment from 'sentiment';
 const sentiment = new Sentiment();
 
-function randomInArray(array) {
+export function randomInArray<T extends any>(array: T[]): T {
   return array[Math.floor(Math.random() * array.length)];
 }
 
-function findKeyword({
+interface FindKeywordParams {
+  state: 'approved' | 'changes_requested';
+  body: string;
+  fallbackApprove: string;
+  fallbackChangesRequested: string;
+}
+
+export function findKeyword({
   state,
   body,
   fallbackApprove,
   fallbackChangesRequested,
-}) {
+}: FindKeywordParams): string {
   const analysis = sentiment.analyze(body);
 
   const random = Math.random();
@@ -43,8 +50,3 @@ function findKeyword({
     return fallbackApprove;
   }
 }
-
-module.exports = {
-  randomInArray,
-  findKeyword,
-};

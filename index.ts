@@ -1,9 +1,17 @@
-const core = require('@actions/core');
-const github = require('@actions/github');
-const fetch = require('node-fetch');
-const { randomInArray, findKeyword } = require('./utils');
+import * as core from '@actions/core';
+import * as github from '@actions/github';
+import fetch from 'node-fetch';
+import { randomInArray, findKeyword } from './utils';
 
-function getRandomGif(results) {
+type TenorResults = {
+  media: {
+    gif: {
+      url: string;
+    };
+  }[];
+}[];
+
+function getRandomGif(results: TenorResults) {
   if (results.length > 0) {
     const result = randomInArray(results);
     if (result.media[0]) {
@@ -14,7 +22,10 @@ function getRandomGif(results) {
   core.debug('no results in tenor response');
 }
 
-async function fetchGif(tenorApiKey, keyword) {
+async function fetchGif(
+  tenorApiKey: string,
+  keyword: string
+): Promise<null | string> {
   if (!tenorApiKey) {
     return null;
   }
@@ -33,7 +44,7 @@ async function fetchGif(tenorApiKey, keyword) {
     );
     if (response.ok) {
       const json = await response.json();
-      const url = getRandomGif(json.results);
+      const url = getRandomGif(json.results as TenorResults);
       if (url) {
         return `![${keyword}](${url})`;
       }
@@ -47,15 +58,15 @@ async function fetchGif(tenorApiKey, keyword) {
   }
 }
 
-function parseKeywordConfig(configString) {
+function parseKeywordConfig(configString: string): string {
   const words = configString.split(',').map((keyword) => keyword.trim());
   return randomInArray(words);
 }
 
-async function run() {
+async function run(): Promise<void> {
   try {
     const githubToken = core.getInput('GITHUB_TOKEN');
-    const tenorApiKey = core.getInput('TENOR_API_KEY');
+    const tenorApiKey = core.getInput('TENOR_API_KEY', { required: true });
     if (!githubToken) {
       core.setFailed('No GitHub token set.');
       return;
@@ -70,6 +81,11 @@ async function run() {
 
     if (context.payload.pull_request == null) {
       core.setFailed('No pull request found.');
+      return;
+    }
+
+    if (context.payload.review == null) {
+      core.setFailed('No pull request review found.');
       return;
     }
 

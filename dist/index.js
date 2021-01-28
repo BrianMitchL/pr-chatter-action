@@ -2,122 +2,6 @@ module.exports =
 /******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
-/***/ 2932:
-/***/ ((__unused_webpack_module, __unused_webpack_exports, __nccwpck_require__) => {
-
-const core = __nccwpck_require__(2186);
-const github = __nccwpck_require__(5438);
-const fetch = __nccwpck_require__(467);
-const { randomInArray, findKeyword } = __nccwpck_require__(1252);
-
-function getRandomGif(results) {
-  if (results.length > 0) {
-    const result = randomInArray(results);
-    if (result.media[0]) {
-      return result.media[0].gif.url;
-    }
-    core.debug('no media found in random tenor result');
-  }
-  core.debug('no results in tenor response');
-}
-
-async function fetchGif(tenorApiKey, keyword) {
-  if (!tenorApiKey) {
-    return null;
-  }
-
-  const params = new URLSearchParams();
-  params.append('key', tenorApiKey);
-  params.append('q', keyword);
-  params.append('limit', '25');
-  params.append('locale', 'en_US');
-  params.append('contentfilter', 'medium');
-  params.append('media_filter', 'minimal');
-
-  try {
-    const response = await fetch(
-      `https://api.tenor.com/v1/search?${params.toString()}`
-    );
-    if (response.ok) {
-      const json = await response.json();
-      const url = getRandomGif(json.results);
-      if (url) {
-        return `![${keyword}](${url})`;
-      }
-      return null;
-    } else {
-      return null;
-    }
-  } catch (e) {
-    core.debug(e.message);
-    return null;
-  }
-}
-
-function parseKeywordConfig(configString) {
-  const words = configString.split(',').map((keyword) => keyword.trim());
-  return randomInArray(words);
-}
-
-async function run() {
-  try {
-    const githubToken = core.getInput('GITHUB_TOKEN');
-    const tenorApiKey = core.getInput('TENOR_API_KEY');
-    if (!githubToken) {
-      core.setFailed('No GitHub token set.');
-      return;
-    }
-
-    if (!tenorApiKey) {
-      core.setFailed('No Tenor API key set.');
-      return;
-    }
-
-    const context = github.context;
-
-    if (context.payload.pull_request == null) {
-      core.setFailed('No pull request found.');
-      return;
-    }
-
-    const approvedGifKeyword = parseKeywordConfig(
-      core.getInput('approved-gif-keywords')
-    );
-    const changesRequestedGifKeyword = parseKeywordConfig(
-      core.getInput('changes-requested-gif-keywords')
-    );
-
-    const octokit = github.getOctokit(githubToken);
-
-    const state = context.payload.review.state;
-
-    if (['approved', 'changes_requested'].includes(state)) {
-      const keyword = findKeyword({
-        state,
-        body: context.payload.review.body,
-        fallbackApprove: approvedGifKeyword,
-        fallbackChangesRequested: changesRequestedGifKeyword,
-      });
-      const gifMarkdown = await fetchGif(tenorApiKey, keyword);
-
-      if (gifMarkdown) {
-        await octokit.issues.createComment({
-          ...context.repo,
-          issue_number: context.payload.pull_request.number,
-          body: gifMarkdown,
-        });
-      }
-    }
-  } catch (error) {
-    core.setFailed(error.message);
-  }
-}
-
-run();
-
-
-/***/ }),
-
 /***/ 7351:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
@@ -6154,59 +6038,158 @@ function wrappy (fn, cb) {
 
 /***/ }),
 
-/***/ 1252:
-/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
+/***/ 6196:
+/***/ ((__unused_webpack_module, __webpack_exports__, __nccwpck_require__) => {
 
-const Sentiment = __nccwpck_require__(2047);
-const sentiment = new Sentiment();
+"use strict";
+// ESM COMPAT FLAG
+__nccwpck_require__.r(__webpack_exports__);
 
+// EXTERNAL MODULE: ./node_modules/@actions/core/lib/core.js
+var core = __nccwpck_require__(2186);
+// EXTERNAL MODULE: ./node_modules/@actions/github/lib/github.js
+var github = __nccwpck_require__(5438);
+// EXTERNAL MODULE: ./node_modules/node-fetch/lib/index.js
+var lib = __nccwpck_require__(467);
+var lib_default = /*#__PURE__*/__nccwpck_require__.n(lib);
+
+// EXTERNAL MODULE: ./node_modules/sentiment/lib/index.js
+var sentiment_lib = __nccwpck_require__(2047);
+var sentiment_lib_default = /*#__PURE__*/__nccwpck_require__.n(sentiment_lib);
+
+// CONCATENATED MODULE: ./utils.ts
+
+const sentiment = new (sentiment_lib_default())();
 function randomInArray(array) {
-  return array[Math.floor(Math.random() * array.length)];
+    return array[Math.floor(Math.random() * array.length)];
+}
+function findKeyword({ state, body, fallbackApprove, fallbackChangesRequested, }) {
+    const analysis = sentiment.analyze(body);
+    const random = Math.random();
+    // 5% rickroll
+    if (random < 0.05) {
+        return 'rickroll';
+    }
+    // 25% a top trending GIF
+    if (random < 0.3) {
+        return '';
+    }
+    if (state === 'changes_requested') {
+        if (analysis.comparative < 0 && analysis.negative.length > 0) {
+            return randomInArray(analysis.negative);
+        }
+        if (analysis.comparative > 0 && analysis.positive.length > 0) {
+            return randomInArray(analysis.positive);
+        }
+        if (analysis.words.length > 0) {
+            return randomInArray(analysis.words);
+        }
+        return fallbackChangesRequested;
+    }
+    else {
+        if (analysis.comparative > 0 && analysis.positive.length > 0) {
+            return randomInArray(analysis.positive);
+        }
+        return fallbackApprove;
+    }
 }
 
-function findKeyword({
-  state,
-  body,
-  fallbackApprove,
-  fallbackChangesRequested,
-}) {
-  const analysis = sentiment.analyze(body);
+// CONCATENATED MODULE: ./index.ts
 
-  const random = Math.random();
 
-  // 5% rickroll
-  if (random < 0.05) {
-    return 'rickroll';
-  }
 
-  // 25% a top trending GIF
-  if (random < 0.3) {
-    return '';
-  }
 
-  if (state === 'changes_requested') {
-    if (analysis.comparative < 0 && analysis.negative.length > 0) {
-      return randomInArray(analysis.negative);
+function getRandomGif(results) {
+    if (results.length > 0) {
+        const result = randomInArray(results);
+        if (result.media[0]) {
+            return result.media[0].gif.url;
+        }
+        core.debug('no media found in random tenor result');
     }
-    if (analysis.comparative > 0 && analysis.positive.length > 0) {
-      return randomInArray(analysis.positive);
-    }
-    if (analysis.words.length > 0) {
-      return randomInArray(analysis.words);
-    }
-    return fallbackChangesRequested;
-  } else {
-    if (analysis.comparative > 0 && analysis.positive.length > 0) {
-      return randomInArray(analysis.positive);
-    }
-    return fallbackApprove;
-  }
+    core.debug('no results in tenor response');
 }
-
-module.exports = {
-  randomInArray,
-  findKeyword,
-};
+async function fetchGif(tenorApiKey, keyword) {
+    if (!tenorApiKey) {
+        return null;
+    }
+    const params = new URLSearchParams();
+    params.append('key', tenorApiKey);
+    params.append('q', keyword);
+    params.append('limit', '25');
+    params.append('locale', 'en_US');
+    params.append('contentfilter', 'medium');
+    params.append('media_filter', 'minimal');
+    try {
+        const response = await lib_default()(`https://api.tenor.com/v1/search?${params.toString()}`);
+        if (response.ok) {
+            const json = await response.json();
+            const url = getRandomGif(json.results);
+            if (url) {
+                return `![${keyword}](${url})`;
+            }
+            return null;
+        }
+        else {
+            return null;
+        }
+    }
+    catch (e) {
+        core.debug(e.message);
+        return null;
+    }
+}
+function parseKeywordConfig(configString) {
+    const words = configString.split(',').map((keyword) => keyword.trim());
+    return randomInArray(words);
+}
+async function run() {
+    try {
+        const githubToken = core.getInput('GITHUB_TOKEN');
+        const tenorApiKey = core.getInput('TENOR_API_KEY', { required: true });
+        if (!githubToken) {
+            core.setFailed('No GitHub token set.');
+            return;
+        }
+        if (!tenorApiKey) {
+            core.setFailed('No Tenor API key set.');
+            return;
+        }
+        const context = github.context;
+        if (context.payload.pull_request == null) {
+            core.setFailed('No pull request found.');
+            return;
+        }
+        if (context.payload.review == null) {
+            core.setFailed('No pull request review found.');
+            return;
+        }
+        const approvedGifKeyword = parseKeywordConfig(core.getInput('approved-gif-keywords'));
+        const changesRequestedGifKeyword = parseKeywordConfig(core.getInput('changes-requested-gif-keywords'));
+        const octokit = github.getOctokit(githubToken);
+        const state = context.payload.review.state;
+        if (['approved', 'changes_requested'].includes(state)) {
+            const keyword = findKeyword({
+                state,
+                body: context.payload.review.body,
+                fallbackApprove: approvedGifKeyword,
+                fallbackChangesRequested: changesRequestedGifKeyword,
+            });
+            const gifMarkdown = await fetchGif(tenorApiKey, keyword);
+            if (gifMarkdown) {
+                await octokit.issues.createComment({
+                    ...context.repo,
+                    issue_number: context.payload.pull_request.number,
+                    body: gifMarkdown,
+                });
+            }
+        }
+    }
+    catch (error) {
+        core.setFailed(error.message);
+    }
+}
+run();
 
 
 /***/ }),
@@ -6379,12 +6362,52 @@ module.exports = require("zlib");;
 /******/ 	}
 /******/ 	
 /************************************************************************/
+/******/ 	/* webpack/runtime/compat get default export */
+/******/ 	(() => {
+/******/ 		// getDefaultExport function for compatibility with non-harmony modules
+/******/ 		__nccwpck_require__.n = (module) => {
+/******/ 			var getter = module && module.__esModule ?
+/******/ 				() => module['default'] :
+/******/ 				() => module;
+/******/ 			__nccwpck_require__.d(getter, { a: getter });
+/******/ 			return getter;
+/******/ 		};
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/define property getters */
+/******/ 	(() => {
+/******/ 		// define getter functions for harmony exports
+/******/ 		__nccwpck_require__.d = (exports, definition) => {
+/******/ 			for(var key in definition) {
+/******/ 				if(__nccwpck_require__.o(definition, key) && !__nccwpck_require__.o(exports, key)) {
+/******/ 					Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
+/******/ 				}
+/******/ 			}
+/******/ 		};
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/hasOwnProperty shorthand */
+/******/ 	(() => {
+/******/ 		__nccwpck_require__.o = (obj, prop) => Object.prototype.hasOwnProperty.call(obj, prop)
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/make namespace object */
+/******/ 	(() => {
+/******/ 		// define __esModule on exports
+/******/ 		__nccwpck_require__.r = (exports) => {
+/******/ 			if(typeof Symbol !== 'undefined' && Symbol.toStringTag) {
+/******/ 				Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
+/******/ 			}
+/******/ 			Object.defineProperty(exports, '__esModule', { value: true });
+/******/ 		};
+/******/ 	})();
+/******/ 	
 /******/ 	/* webpack/runtime/compat */
 /******/ 	
 /******/ 	__nccwpck_require__.ab = __dirname + "/";/************************************************************************/
 /******/ 	// module exports must be returned from runtime so entry inlining is disabled
 /******/ 	// startup
 /******/ 	// Load entry module and return exports
-/******/ 	return __nccwpck_require__(2932);
+/******/ 	return __nccwpck_require__(6196);
 /******/ })()
 ;
