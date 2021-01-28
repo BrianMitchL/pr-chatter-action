@@ -52,7 +52,7 @@ on:
     types: [submitted]
 
 # later in the job steps
-- uses: BrianMitchL/pr-chatter-action@main
+- uses: BrianMitchL/pr-chatter-action@v1
   with:
     # required
     TENOR_API_KEY: ${{ secrets.TENOR_API_KEY }}
