@@ -16,7 +16,7 @@ function getRandomGif(results) {
     if (result.media[0]) {
       return result.media[0].gif.url;
     }
-    core.debug('no no media found in random tenor result');
+    core.debug('no media found in random tenor result');
   }
   core.debug('no results in tenor response');
 }
@@ -83,8 +83,8 @@ async function run() {
     const approvedGifKeyword = parseKeywordConfig(
       core.getInput('approvedGifKeywords')
     );
-    const changedRequestedGifKeyword = parseKeywordConfig(
-      core.getInput('changedRequestedGifKeywords')
+    const changesRequestedGifKeyword = parseKeywordConfig(
+      core.getInput('changesRequestedGifKeywords')
     );
 
     const octokit = github.getOctokit(githubToken);
@@ -96,7 +96,7 @@ async function run() {
         state,
         body: context.payload.review.body,
         fallbackApprove: approvedGifKeyword,
-        fallbackChangesRequested: changedRequestedGifKeyword,
+        fallbackChangesRequested: changesRequestedGifKeyword,
       });
       const gifMarkdown = await fetchGif(tenorApiKey, keyword);
 

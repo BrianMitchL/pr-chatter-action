@@ -18,7 +18,7 @@ inputs:
     description: 'Comma separated string of keywords to randomly use for embedding PR approved GIFs'
     required: false
     default: 'amazing, approve, awesome, great work, good job, hooray, incredible, joy, looks good, nice, perfect, thumbs up, wonderful'
-  changedRequestedGifKeywords:
-    description: 'Comma separated string of keywords to randomly use for embedding PR changed requested GIFs'
+  changesRequestedGifKeywords:
+    description: 'Comma separated string of keywords to randomly use for embedding PR changes requested GIFs'
     required: false
     default: 'try again, review, at least you tried, so close, dumpster fire, terrible, awful, disgusting, sad'
