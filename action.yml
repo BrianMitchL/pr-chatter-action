@@ -8,17 +8,28 @@ runs:
   using: 'node12'
   main: 'dist/index.js'
 inputs:
-  GITHUB_TOKEN:
-    description: 'Github Token for authentication'
-    required: true
   TENOR_API_KEY:
-    description: 'API key for using GIFs from Tenor'
+    description: 'Key for the Tenor GIFs API'
     required: true
-  approvedGifKeywords:
-    description: 'Comma separated string of keywords to randomly use for embedding PR approved GIFs'
+  GITHUB_TOKEN:
+    description: >
+      Github Token for authentication
+
+      GitHub token used for posting comments on the PR. This defaults
+      to using the built-in GitHub token for the repository and comments
+      as the "github-actions" bot. You can set this as a personal access
+      token (PAT) if you want to comment as another account.
+    required: false
+    default: ${{ github.token }}
+  approved-gif-keywords:
+    description: >
+      Comma separated string of keywords to randomly use for embedding PR
+      approved GIFs
     required: false
     default: 'amazing, approve, awesome, great work, good job, hooray, incredible, joy, looks good, nice, perfect, thumbs up, wonderful'
-  changesRequestedGifKeywords:
-    description: 'Comma separated string of keywords to randomly use for embedding PR changes requested GIFs'
+  changes-requested-gif-keywords:
+    description: >
+      Comma separated string of keywords to randomly use for embedding PR
+      changes requested GIFs
     required: false
     default: 'try again, review, at least you tried, so close, dumpster fire, terrible, awful, disgusting, sad'

@@ -74,10 +74,10 @@ async function run() {
     }
 
     const approvedGifKeyword = parseKeywordConfig(
-      core.getInput('approvedGifKeywords')
+      core.getInput('approved-gif-keywords')
     );
     const changesRequestedGifKeyword = parseKeywordConfig(
-      core.getInput('changesRequestedGifKeywords')
+      core.getInput('changes-requested-gif-keywords')
     );
 
     const octokit = github.getOctokit(githubToken);

@@ -15,5 +15,6 @@ jobs:
       - name: PR Chatter step
         uses: ./ # Uses an action in the root directory
         with:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TENOR_API_KEY: ${{ secrets.TENOR_API_KEY }}
+          approved-gif-keywords: balloon
+          changes-requested-gif-keywords: fire
