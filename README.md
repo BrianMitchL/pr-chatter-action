@@ -59,7 +59,7 @@ on:
     # optional
     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     # optional
-    approvedGifKeywords: 'amazing, approve, awesome, great work, good job, hooray, incredible, joy, looks good, nice, perfect, thumbs up, wonderful'
+    approved-gif-keywords: 'amazing, approve, awesome, great work, good job, hooray, incredible, joy, looks good, nice, perfect, thumbs up, wonderful'
     # optional
-    changesRequestedGifKeywords: 'try again, review, at least you tried, so close, dumpster fire, terrible, awful, disgusting, sad'
+    changes-requested-gif-keywords: 'try again, review, at least you tried, so close, dumpster fire, terrible, awful, disgusting, sad'
 ```
