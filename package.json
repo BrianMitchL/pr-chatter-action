@@ -1,17 +1,17 @@
 {
   "name": "pr-chatter-action",
   "version": "1.0.0",
-  "description": "Add fun chatter to your Pull Requests",
-  "main": "index.js",
+  "description": "Intelligent GIF replies for Pull Request approvals and when changes are requested",
+  "main": "dist/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "ncc build index.js --license licenses.txt"
+    "build": "ncc build index.ts --license licenses.txt"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/BrianMitchL/pr-chatter-action.git"
   },
-  "author": "",
+  "author": "BrianMitchL",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/BrianMitchL/pr-chatter-action/issues"
@@ -24,10 +24,12 @@
     "sentiment": "^5.0.2"
   },
   "devDependencies": {
+    "@types/node-fetch": "^2.5.8",
     "@vercel/ncc": "^0.27.0",
     "husky": "^4.3.8",
     "prettier": "^2.2.1",
-    "pretty-quick": "^3.1.0"
+    "pretty-quick": "^3.1.0",
+    "typescript": "^4.1.3"
   },
   "husky": {
     "hooks": {
