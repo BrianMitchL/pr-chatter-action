@@ -6,7 +6,7 @@ requested.
 The action looks at the review body text and analyzes the sentiment of the
 text to influence the keyword used for finding a GIF.
 
-This action is designed to be run on the `pull_request_review` event
+This action is designed to be run on the `pull_request_review` event.
 
 ```yaml
 on:
