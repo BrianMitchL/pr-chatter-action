@@ -7,6 +7,11 @@ type TenorResults = {
   media: {
     gif: {
       url: string;
+      size: number;
+    };
+    tinygif: {
+      url: string;
+      size: number;
     };
   }[];
 }[];
@@ -15,7 +20,10 @@ function getRandomGif(results: TenorResults) {
   if (results.length > 0) {
     const result = randomInArray(results);
     if (result.media[0]) {
-      return result.media[0].gif.url;
+      // ~5MB
+      return result.media[0].gif.size < 5000000
+        ? result.media[0].gif.url
+        : result.media[0].tinygif.url;
     }
     core.debug('no media found in random tenor result');
   }
@@ -46,7 +54,7 @@ async function fetchGif(
       const json = await response.json();
       const url = getRandomGif(json.results as TenorResults);
       if (url) {
-        return `![${keyword}](${url})`;
+        return `![${keyword} - Via Tenor](${url})`;
       }
       return null;
     } else {

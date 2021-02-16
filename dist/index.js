@@ -6110,7 +6110,10 @@ function getRandomGif(results) {
     if (results.length > 0) {
         const result = randomInArray(results);
         if (result.media[0]) {
-            return result.media[0].gif.url;
+            // ~5MB
+            return result.media[0].gif.size < 5000000
+                ? result.media[0].gif.url
+                : result.media[0].tinygif.url;
         }
         core.debug('no media found in random tenor result');
     }
@@ -6133,7 +6136,7 @@ async function fetchGif(tenorApiKey, keyword) {
             const json = await response.json();
             const url = getRandomGif(json.results);
             if (url) {
-                return `![${keyword}](${url})`;
+                return `![${keyword} - Via Tenor](${url})`;
             }
             return null;
         }
