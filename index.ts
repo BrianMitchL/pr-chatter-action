@@ -51,8 +51,8 @@ async function fetchGif(
       `https://api.tenor.com/v1/search?${params.toString()}`
     );
     if (response.ok) {
-      const json = await response.json();
-      const url = getRandomGif(json.results as TenorResults);
+      const json = (await response.json()) as { results: TenorResults };
+      const url = getRandomGif(json.results);
       if (url) {
         return `![${keyword} - Via Tenor](${url})`;
       }
@@ -61,7 +61,9 @@ async function fetchGif(
       return null;
     }
   } catch (e) {
-    core.debug(e.message);
+    if (e instanceof Error) {
+      core.debug(e.message);
+    }
     return null;
   }
 }
@@ -118,7 +120,7 @@ async function run(): Promise<void> {
       const gifMarkdown = await fetchGif(tenorApiKey, keyword);
 
       if (gifMarkdown) {
-        await octokit.issues.createComment({
+        await octokit.rest.issues.createComment({
           ...context.repo,
           issue_number: context.payload.pull_request.number,
           body: gifMarkdown,
@@ -126,7 +128,9 @@ async function run(): Promise<void> {
       }
     }
   } catch (error) {
-    core.setFailed(error.message);
+    if (error instanceof Error) {
+      core.setFailed(error.message);
+    }
   }
 }
 
