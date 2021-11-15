@@ -13,7 +13,7 @@ inputs:
     required: true
   GITHUB_TOKEN:
     description: >
-      Github Token for authentication
+      GitHub Token for authentication
 
       GitHub token used for posting comments on the PR. This defaults
       to using the built-in GitHub token for the repository and comments

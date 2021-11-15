@@ -22,7 +22,7 @@ on:
 
 ### `GITHUB_TOKEN`
 
-**Optional** Github Token for authentication
+**Optional** GitHub Token for authentication
 
 GitHub token used for posting comments on the PR. This defaults
 to using the built-in GitHub token for the repository and comments
