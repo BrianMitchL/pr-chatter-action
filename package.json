@@ -5,7 +5,7 @@
   "main": "dist/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "ncc build index.ts --license licenses.txt",
+    "build": "ncc build index.ts --target es2021 --license licenses.txt",
     "lint": "pretty-quick"
   },
   "repository": {
@@ -19,18 +19,18 @@
   },
   "homepage": "https://github.com/BrianMitchL/pr-chatter-action#readme",
   "dependencies": {
-    "@actions/core": "^1.6.0",
-    "@actions/github": "^5.0.0",
-    "node-fetch": "^2.6.6",
+    "@actions/core": "^1.9.0",
+    "@actions/github": "^5.0.3",
+    "node-fetch": "^2.6.7",
     "sentiment": "^5.0.2"
   },
   "devDependencies": {
-    "@types/node-fetch": "^2.5.12",
-    "@vercel/ncc": "^0.31.1",
-    "prettier": "^2.4.1",
-    "pretty-quick": "^3.1.1",
-    "simple-git-hooks": "^2.7.0",
-    "typescript": "^4.4.4"
+    "@types/node-fetch": "^2.6.2",
+    "@vercel/ncc": "^0.34.0",
+    "prettier": "^2.7.1",
+    "pretty-quick": "^3.1.3",
+    "simple-git-hooks": "^2.8.0",
+    "typescript": "^4.7.4"
   },
   "simple-git-hooks": {
     "pre-commit": "npm run lint"
